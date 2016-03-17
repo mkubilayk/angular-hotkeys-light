@@ -1,0 +1,27 @@
+{
+  "name": "angular-hotkeys-light",
+  "version": "1.0.0",
+  "description": "Keyboard shortcuts for your Angular applications",
+  "authors": [
+    "Eugene Brodsky <fupslot@gmail.com>"
+  ],
+  "keywords": [
+    "angular",
+    "angularjs",
+    "keyboard",
+    "shortcut",
+    "hotkeys",
+    "light",
+    "events"
+  ],
+  "license": "MIT License",
+  "ignore": [
+    "**/.*",
+    "jasmine",
+    "node_modules",
+    "test",
+    "tests",
+    "Gruntfile.js",
+    "karma.conf.js"
+  ]
+}
