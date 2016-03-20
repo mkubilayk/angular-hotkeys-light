@@ -36,7 +36,7 @@ describe('$Hotkeys', function() {
 
   var createEvent = function(args) {
     var eventName = args.name || 'keydown';
-    var evt = new Event(eventName, {bubbles: true});
+    var evt = new CustomEvent(eventName, {bubbles: true});
     evt.code = args.code;
     evt.which = args.which;
     evt.keyCode = args.which;

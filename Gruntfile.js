@@ -43,6 +43,8 @@ module.exports = function (grunt) {
     karma: {
       options: {
         files: [
+          './node_modules/es5-shim/es5-shim.js',
+          './test/lib/custom_event_polyfill.js',
           './node_modules/angular/angular.js',
           './node_modules/angular-mocks/angular-mocks.js'
         ]
