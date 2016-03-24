@@ -1,8 +1,8 @@
 ## angular-hotkeys-light
-![Latest build](https://img.shields.io/badge/latest-v1.0.1-brightgreen.svg)
+![Latest build](https://img.shields.io/badge/latest-v1.0.2-brightgreen.svg)
 ![Latest build](https://travis-ci.org/fupslot/angular-hotkeys-light.svg?branch=master)
-![Size](https://img.shields.io/badge/size-3.38kb-green.svg)
-![GZip](https://img.shields.io/badge/gzip-1.29kb-brightgreen.svg)
+![Size](https://img.shields.io/badge/size-4.04kb-green.svg)
+![GZip](https://img.shields.io/badge/gzip-1.47kb-brightgreen.svg)
 
 Code-centric keyboard shortcuts for your Angular apps.
 
@@ -52,7 +52,7 @@ Creates `hotkey` object based on given `object`
 \* - required parameter.
 
 
-#### Hotkeys.registerHotkey(\<hotkey\>)
+#### Hotkeys.registerHotkey(\<hotkey\>): Array.\<hotkey\>
 This method registers the hotkey object in the global table. If the given combination already exist it will append the hotkey to it. In the case when a combination has multiple callbacks they will be invoked in FIFO way.
 
 ##### Basic usage
@@ -96,7 +96,7 @@ angular.module('myApp', [])
 });
 ```
 
-#####  Using hotkeys within a service
+##### Using hotkeys within a service
 
 ```js
 angular.module('myApp', [])
@@ -119,7 +119,25 @@ angular.module('myApp', [])
 
 Note: Unlike the directive we do not need to worry about deregestering a hotkey here, because a service never gets destroyed.
 
-#### Hotkeys.registerHotkeyUp(\<hotkey\>)
+#### Share a callback between multiple hotkeys
+
+```js
+// Create hotkeys with shared callback
+var hotkeys = Hotkeys.createHotkey({
+    key: ['ctrl+a', 'meta+a'],
+    callback: function (event) {
+      var key = Hotkeys.keyStringFromEvent(event);
+      console.log('You pressed %s key combination', key);
+    }
+});
+
+// Register hotkeys object
+Hotkeys.registerHotkey(hotkeys);
+```
+
+Note: Calling `deregisterHotkey` method on `hotkey` object with multiple keys, will correctly deregister a callback for each key.
+
+#### Hotkeys.registerHotkeyUp(\<hotkey\>): : Array.\<hotkey\>
 
 Same as `registerHotkey`, instead a callback binded to `keyup` event.
 

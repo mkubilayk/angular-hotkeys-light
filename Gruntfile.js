@@ -96,7 +96,7 @@ module.exports = function (grunt) {
     }
   });
 
-  grunt.registerTask('build', ['eslint', 'uglify:build', 'karma:build', 'replace']);
+  grunt.registerTask('build', ['eslint', 'uglify:build', 'karma:build', 'replace', 'bytesize']);
 
   grunt.registerTask('test', function(target){
     if (target === 'build') {

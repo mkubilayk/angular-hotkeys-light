@@ -1,4 +1,4 @@
-describe('$Hotkeys', function() {
+describe('Hotkeys', function() {
   var Hotkeys;
 
   /**
@@ -21,7 +21,7 @@ describe('$Hotkeys', function() {
 
     Object.defineProperty(Mutable.prototype, '_registerKey', {
       value: function() {
-        Immutable.prototype._registerKey.apply(this, arguments);
+        return Immutable.prototype._registerKey.apply(this, arguments);
       }, writable: true
     });
 
@@ -92,6 +92,76 @@ describe('$Hotkeys', function() {
     Hotkeys = new Mutable();
     spyOn(Hotkeys, '_registerKey').and.callThrough();
   }));
+
+  it('be able to clone existing hotkey object', function() {
+    var hotkey = Hotkeys.createHotkey({
+      key: 'ctrl+a',
+      context: null,
+      callback: function() {}
+    });
+
+    var clone = hotkey.clone();
+    expect(hotkey == clone).toBeFalsy();
+    expect(hotkey.id).toEqual(clone.id);
+    expect(hotkey.key).toEqual(clone.key);
+    expect(hotkey.context).toEqual(clone.context);
+    expect(hotkey.callback).toEqual(clone.callback);
+    expect(hotkey.args).toEqual(clone.args);
+    expect(hotkey.onKeyUp).toEqual(clone.onKeyUp);
+  });
+
+  it('should return Array when register a hotkey object', function() {
+    var hotkey = Hotkeys.createHotkey({key: 'ctrl+a', callback: function(){} });
+    var hotkeys = Hotkeys.registerHotkey(hotkey);
+    expect(Array.isArray(hotkeys)).toBeTruthy();
+  });
+
+  it('should be able to register/deregister hotkey', function() {
+    var hotkeys;
+    var hotkey = Hotkeys.createHotkey({
+      key: 'ctrl+a',
+      callback: function() {}
+    });
+
+    hotkeys = Hotkeys.registerHotkey(hotkey);
+    expect(Array.isArray(hotkeys)).toBeTruthy();
+    expect(hotkeys.length).toEqual(1);
+    expect(Hotkeys._hotkeys).toEqual(jasmine.any(Object));
+    expect(Hotkeys._hotkeys['ctrl+a']).toEqual(jasmine.any(Array));
+    expect(Hotkeys._hotkeys['ctrl+a'].length).toEqual(1);
+
+    hotkeys = Hotkeys.deregisterHotkey(hotkey);
+    expect(Array.isArray(hotkeys)).toBeTruthy();
+    expect(hotkeys.length).toEqual(1);
+    expect(Hotkeys._hotkeys).toEqual(jasmine.any(Object));
+    expect(Hotkeys._hotkeys['ctrl+a']).toEqual(jasmine.any(Array));
+    expect(Hotkeys._hotkeys['ctrl+a'].length).toEqual(0);
+  });
+
+  it('should be able to register/deregister multiple keys with shared callback', function() {
+    var hotkeys;
+    var hotkey = Hotkeys.createHotkey({
+      key: ['ctrl+a', 'meta+a'],
+      callback: function() {}
+    });
+
+    hotkeys = Hotkeys.registerHotkey(hotkey);
+    expect(Array.isArray(hotkeys)).toBeTruthy();
+    expect(hotkeys.length).toEqual(2);
+    expect(Hotkeys._hotkeys).toEqual(jasmine.any(Object));
+    expect(Hotkeys._hotkeys['ctrl+a']).toEqual(jasmine.any(Array));
+    expect(Hotkeys._hotkeys['ctrl+a'].length).toEqual(1);
+    expect(Hotkeys._hotkeys['meta+a']).toEqual(jasmine.any(Array));
+    expect(Hotkeys._hotkeys['meta+a'].length).toEqual(1);
+
+    hotkeys = Hotkeys.deregisterHotkey(hotkey);
+    expect(hotkeys).toEqual(jasmine.any(Array));
+    expect(Hotkeys._hotkeys).toEqual(jasmine.any(Object));
+    expect(Hotkeys._hotkeys['ctrl+a']).toEqual(jasmine.any(Array));
+    expect(Hotkeys._hotkeys['ctrl+a'].length).toEqual(0);
+    expect(Hotkeys._hotkeys['meta+a']).toEqual(jasmine.any(Array));
+    expect(Hotkeys._hotkeys['meta+a'].length).toEqual(0);
+  });
 
   //  Combos
   //  ctrl + <key>

@@ -12,6 +12,10 @@
         s4() + '-' + s4() + s4() + s4();
     }
 
+    var isArray = Array.isArray || function isArray(obj) {
+      return Object.prototype.toString.call(obj) === '[object Array]';
+    };
+
     /**
     * Creates a duplicate-free version of an array, using SameValueZero
     * for equality comparisons, in which only the first occurrence of
@@ -102,6 +106,10 @@
       if (this.callback === null || this.callback === void 0) {
         throw new TypeError('HotKeys: Argument "callback" is required');
       }
+    };
+
+    HotKey.prototype.clone = function() {
+      return new HotKey(this);
     };
 
     var Hotkeys = function() {
@@ -228,16 +236,15 @@
     * @param [Boolean]  params.onKeyUp  - if this is intended for a keyup.
     * @param [String]   params.id       - the identifier for this registration.
     */
-    Object.defineProperty(Hotkeys.prototype, 'deregisterHotkey', {
-      value: function deregisterHotkey(hotkey) {
+    Object.defineProperty(Hotkeys.prototype, '_deregisterHotkey', {
+      value: function _deregisterHotkey(hotkey) {
         var ret;
         var table = this._hotkeys;
-
-        this._validateHotkey(hotkey);
 
         if (hotkey.onKeyUp) {
           table = this._hotkeysUp;
         }
+
         if (table[hotkey.key]) {
           var callbackArray = table[hotkey.key];
           for (var i = 0; i < callbackArray.length; ++i) {
@@ -254,6 +261,33 @@
     });
 
     /**
+     * Unregister hotkeys
+     * @param  {Hotkey}  hotkey A hotkey object
+     * @return {Array}
+     */
+    Object.defineProperty(Hotkeys.prototype, 'deregisterHotkey', {
+      value: function deregisterHotkey(hotkey) {
+        var result = [];
+
+        this._validateHotkey(hotkey);
+
+        if (isArray(hotkey.key)) {
+          for (var i = hotkey.key.length - 1; i >= 0; i--) {
+            var clone = hotkey.clone();
+            clone.key = hotkey.key[i];
+            var ret = this._deregisterHotkey(clone);
+            if (ret !== void 0) {
+              result.push(ret[0]);
+            }
+          }
+        } else {
+          result.push(this._deregisterHotkey(hotkey));
+        }
+        return result;
+      }
+    });
+
+    /**
      * Validate HotKey type
      */
     Object.defineProperty(Hotkeys.prototype, '_validateHotkey', {
@@ -266,7 +300,7 @@
 
     /**
     * Register a hotkey (shortcut) helper for (keyUp/keyDown).
-    *
+    * @param {Object} params Parameters object
     * @param {String}   params.key      - valid key string.
     * @param {Function} params.callback - routine to run when key is pressed.
     * @param {Object}   params.context  - @this value in the callback.
@@ -283,6 +317,25 @@
 
         table[hotkey.key] = table[hotkey.key] || [];
         table[hotkey.key].push(hotkey);
+        return hotkey;
+      }
+    });
+
+    Object.defineProperty(Hotkeys.prototype, '_registerKeys', {
+      value: function _registerKeys(hotkey) {
+        var result = [];
+
+        if (isArray(hotkey.key)) {
+          for (var i = hotkey.key.length - 1; i >= 0; i--) {
+            var clone = hotkey.clone();
+            clone.id = guid();
+            clone.key = hotkey.key[i];
+            result.push(this._registerKey(clone));
+          }
+        } else {
+          result.push(this._registerKey(hotkey));
+        }
+        return result;
       }
     });
 
@@ -292,7 +345,7 @@
     Object.defineProperty(Hotkeys.prototype, 'registerHotkey', {
       value: function registerHotkey(hotkey) {
         this._validateHotkey(hotkey);
-        this._registerKey(hotkey);
+        return this._registerKeys(hotkey);
       }
     });
 
@@ -304,7 +357,7 @@
       value: function registerHotkeyUp(hotkey) {
         this._validateHotkey(hotkey);
         hotkey.onKeyUp = true;
-        this._registerKey(hotkey);
+        this._registerKeys(hotkey);
       }
     });
 
