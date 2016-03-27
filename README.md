@@ -1,8 +1,8 @@
 ## angular-hotkeys-light
-![Latest build](https://img.shields.io/badge/latest-v1.0.2-brightgreen.svg)
+![Latest build](https://img.shields.io/badge/latest-v1.0.3-brightgreen.svg)
 ![Latest build](https://travis-ci.org/fupslot/angular-hotkeys-light.svg?branch=master)
-![Size](https://img.shields.io/badge/size-4.04kb-green.svg)
-![GZip](https://img.shields.io/badge/gzip-1.47kb-brightgreen.svg)
+![Size](https://img.shields.io/badge/size-4.17kb-green.svg)
+![GZip](https://img.shields.io/badge/gzip-1.52kb-brightgreen.svg)
 
 Code-centric keyboard shortcuts for your Angular apps.
 
@@ -152,6 +152,23 @@ Extracts a key string from `keydown` and `keyup` events. Note: Do not use this m
 document.addEventListener('keydown', function(event) {
   var combo = Hotkeys.keyStringFromEvent(event);
   console.log(combo); // Ex: 'ctrl+c'
+});
+```
+
+#### Hotkeys.match(event, \<String\|Array\>): \<boolean\>
+Checks given shortcut against the event and return `true` when find a match. Helful to use in conjunction with user input elements like: input, textarea, etc.
+
+```js
+textarea.addEventListener('keydown', function(event) {
+	if (Hotkeys.match(event, 'escape') {
+		event.preventDefault();
+		event.target.value = '';
+	}
+
+	if (Hotkeys.match(event, ['ctrl+enter', 'meta+enter']) {
+		event.prevetDefault();
+		// do something
+	}
 });
 ```
 

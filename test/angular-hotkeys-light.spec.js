@@ -163,6 +163,17 @@ describe('Hotkeys', function() {
     expect(Hotkeys._hotkeys['meta+a'].length).toEqual(0);
   });
 
+  it('helper "match" function', function() {
+    var event;
+    // ctrl+enter
+    event = createEvent({code: 'Enter', which: 13, ctrlKey: true});
+    expect(Hotkeys.match(event, 'ctrl+enter')).toBeTruthy();
+
+    // ctrl+shift+x
+    event = createEvent({code: 'KeyX', which: 88, ctrlKey: true, shiftKey: true});
+    expect(Hotkeys.match(event, ['ctrl+shift+x'])).toBeTruthy();
+  });
+
   //  Combos
   //  ctrl + <key>
   //  ctrl + alt + <key>

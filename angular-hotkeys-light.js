@@ -372,6 +372,23 @@
       }
     });
 
+    /**
+     * Checks if given shortcut match the event
+     * @param  {Event} event An event
+     * @param  {String|Array} key A shortcut
+     * @return {Boolean}
+     */
+    Object.defineProperty(Hotkeys.prototype, 'match', {
+      value: function(event, key) {
+        if (!isArray(key)) {
+          key = [key];
+        }
+
+        var eventHotkey = this.keyStringFromEvent(event);
+        return Boolean(~key.indexOf(eventHotkey));
+      }
+    });
+
     this.$get = function() { return Hotkeys; };
   });
 }(window.angular));
