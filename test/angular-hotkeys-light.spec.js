@@ -58,11 +58,12 @@ describe('Hotkeys', function() {
     if (args.code === null || args.code === void 0) { args.code = 1; }
     if (args.which === null || args.which === void 0) { args.which = 49; }
 
+    var hotkeyHandler = jasmine.createSpy(args.combo);
     var hotkey = Hotkeys.createHotkey({
       key: args.combo,
       context: hotkeyContext,
       args: hotkeyArgs,
-      callback: jasmine.createSpy(args.combo)
+      callback: hotkeyHandler
     });
     expect(hotkey).not.toBeUndefined();
 
@@ -72,9 +73,9 @@ describe('Hotkeys', function() {
     var event = createEvent(args);
     expect(args.combo).toEqual(Hotkeys.keyStringFromEvent(event));
     sendKeydown(event);
-    expect(hotkey.callback).toHaveBeenCalled();
+    expect(hotkeyHandler).toHaveBeenCalled();
 
-    expect(hotkey.callback.calls.first()).toEqual({
+    expect(hotkeyHandler.calls.first()).toEqual({
       object: hotkeyContext,
       args: [event, hotkeyArgs],
       returnValue: void 0
