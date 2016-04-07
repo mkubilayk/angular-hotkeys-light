@@ -1,5 +1,7 @@
 describe('Hotkeys', function() {
   var Hotkeys;
+  var $rootScope;
+  var $compile;
 
   /**
    * Creates Hotkeys mutable object
@@ -58,11 +60,12 @@ describe('Hotkeys', function() {
     if (args.code === null || args.code === void 0) { args.code = 1; }
     if (args.which === null || args.which === void 0) { args.which = 49; }
 
+    var hotkeyHandler = jasmine.createSpy(args.combo);
     var hotkey = Hotkeys.createHotkey({
       key: args.combo,
       context: hotkeyContext,
       args: hotkeyArgs,
-      callback: jasmine.createSpy(args.combo)
+      callback: hotkeyHandler
     });
     expect(hotkey).not.toBeUndefined();
 
@@ -72,9 +75,9 @@ describe('Hotkeys', function() {
     var event = createEvent(args);
     expect(args.combo).toEqual(Hotkeys.keyStringFromEvent(event));
     sendKeydown(event);
-    expect(hotkey.callback).toHaveBeenCalled();
+    expect(hotkeyHandler).toHaveBeenCalled();
 
-    expect(hotkey.callback.calls.first()).toEqual({
+    expect(hotkeyHandler.calls.first()).toEqual({
       object: hotkeyContext,
       args: [event, hotkeyArgs],
       returnValue: void 0
@@ -87,10 +90,14 @@ describe('Hotkeys', function() {
 
   beforeEach(module('fps.hotkeys'));
 
-  beforeEach(inject(function(_$Hotkeys_) {
+  beforeEach(module('ngTestApp'));
+
+  beforeEach(inject(function(_$rootScope_, _$compile_, _$Hotkeys_) {
     var Mutable = MutableHotkeys(_$Hotkeys_);
     Hotkeys = new Mutable();
     spyOn(Hotkeys, '_registerKey').and.callThrough();
+    $rootScope = _$rootScope_;
+    $compile = _$compile_;
   }));
 
   it('be able to clone existing hotkey object', function() {
@@ -174,26 +181,21 @@ describe('Hotkeys', function() {
     expect(Hotkeys.match(event, ['ctrl+shift+x'])).toBeTruthy();
   });
 
-  //  Combos
-  //  ctrl + <key>
-  //  ctrl + alt + <key>
-  //  ctrl + alt + shift + <key>
-  //  ctrl + alt + shift + meta + <key>
-  //  ctrl + shift + <key>
-  //  ctrl + shift + meta + <key>
-  //  ctrl + meta + <key>
-  //
-  //  alt + <key>
-  //  alt + shift + <key>
-  //  alt + shift + meta + <key>
-  //  alt + meta + <key>
-  //
-  //  shift + <key>
-  //  shift + meta + <key>
-  //
-  //  meta + <key>
-  //
-  //  <key>
+  it('hotkey callback should run angular digest', function() {
+    var $scope = $rootScope.$new(true);
+
+    $scope.onToggle = function() {};
+
+    spyOn($scope, 'onToggle').and.callThrough();
+
+    var element = angular.element('<hotkey_cheetsheet on-toggle="onToggle(show)"></hotkey_cheetsheet>');
+    $compile(element)($scope);
+
+    invokeHotkey({combo: 'meta+enter', code: 'Enter', which: 13, metaKey: true});
+
+    expect($scope.onToggle).toHaveBeenCalledWith(true);
+  });
+
   it('Combo hotkeys', function() {
     //  ctrl + <key>
     invokeHotkey({combo: 'ctrl+1', ctrlKey: true});

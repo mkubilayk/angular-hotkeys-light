@@ -1,8 +1,8 @@
 ## angular-hotkeys-light
-![Latest build](https://img.shields.io/badge/latest-v1.0.3-brightgreen.svg)
+![Latest build](https://img.shields.io/badge/latest-v1.1.0-brightgreen.svg)
 ![Latest build](https://travis-ci.org/fupslot/angular-hotkeys-light.svg?branch=master)
-![Size](https://img.shields.io/badge/size-4.17kb-green.svg)
-![GZip](https://img.shields.io/badge/gzip-1.52kb-brightgreen.svg)
+![Size](https://img.shields.io/badge/size-4.29kb-green.svg)
+![GZip](https://img.shields.io/badge/gzip-1.57kb-brightgreen.svg)
 
 Code-centric keyboard shortcuts for your Angular apps.
 
@@ -44,13 +44,12 @@ Creates `hotkey` object based on given `object`
 `object`: An object with following parameters:
 
 * `id`: {String} Hotkey's id. If it's not supplied, will be auto-generated. Used internaly.
-* `key`\*: {String} A key or key combination you what to bind a callback to. **required**
+* `key`: {String} A key or key combination you what to bind a callback to. **required**
 * `context`: {Object} This object will be passed to a `callback` as `this` parameter
-* `callback`\*: {Function} This function will be invoked when `key` is pressed. Passes two arguments: an event that triggered `callback` and `args` object **required**
+* `callback`: {Function} This function will be invoked when `key` is pressed. Passes two arguments: an event that triggered `callback` and `args` object **required**
 * `args`: {Object} This object will be pass to `callback` as a second argument
 
-\* - required parameter.
-
+####Note: Do not call `$scope.$apply()` manually within a hotkey callback.
 
 #### Hotkeys.registerHotkey(\<hotkey\>): Array.\<hotkey\>
 This method registers the hotkey object in the global table. If the given combination already exist it will append the hotkey to it. In the case when a combination has multiple callbacks they will be invoked in FIFO way.
@@ -160,12 +159,12 @@ Checks given shortcut against the event and return `true` when find a match. Hel
 
 ```js
 textarea.addEventListener('keydown', function(event) {
-	if (Hotkeys.match(event, 'escape') {
+	if (Hotkeys.match(event, 'escape')) {
 		event.preventDefault();
 		event.target.value = '';
 	}
 
-	if (Hotkeys.match(event, ['ctrl+enter', 'meta+enter']) {
+	if (Hotkeys.match(event, ['ctrl+enter', 'meta+enter'])) {
 		event.prevetDefault();
 		// do something
 	}
