@@ -91,7 +91,7 @@
       123: 'f12'
     };
 
-    this.$get = function($rootScope) {
+    this.$get = ['$rootScope', function($rootScope) {
 
       var wrapWithApply = function (fn) {
         return function(event, args) {
@@ -158,7 +158,7 @@
               var hotkey = hotkeys[i];
               hotkey.callback.call(hotkey.context, event, hotkey.args);
             } catch(e) {
-              console.log('HotKeys: ', hotkey.key, e.message);
+              console.error('HotKeys: ', hotkey.key, e.message);
             }
           }
         }
@@ -401,6 +401,6 @@
       });
 
       return Hotkeys;
-    };
+    }];
   });
 }(window.angular));
