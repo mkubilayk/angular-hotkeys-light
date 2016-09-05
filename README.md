@@ -1,5 +1,5 @@
 ## angular-hotkeys-light
-![Latest build](https://img.shields.io/badge/latest-v1.1.0-brightgreen.svg)
+![Latest build](https://img.shields.io/badge/latest-v1.2.0-brightgreen.svg)
 ![Latest build](https://travis-ci.org/fupslot/angular-hotkeys-light.svg?branch=master)
 ![Size](https://img.shields.io/badge/size-4.29kb-green.svg)
 ![GZip](https://img.shields.io/badge/gzip-1.57kb-brightgreen.svg)

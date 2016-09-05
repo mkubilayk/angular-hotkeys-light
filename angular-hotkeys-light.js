@@ -108,6 +108,7 @@
         this.callback = params.callback;
         this.args = params.args;
         this.onKeyUp = false;
+        this.preventIn = params.preventIn || [];
       };
 
       HotKey.prototype.clone = function() {
@@ -144,6 +145,33 @@
       });
 
       /**
+       * Checks whether the handler should be executed. Blocks events fired
+       * from inside an element listed in preventIn.
+       *
+       * @param  {Event} event
+       * @param  {Hotkey} hotkey A hotkey object
+       * @private
+       */
+      Object.defineProperty(Hotkeys.prototype, '_shouldInvokeHandler', {
+        value: function _shouldInvokeHandler(event, hotkey) {
+          var target = event.target || event.srcElement;
+
+          if (!target || !target.nodeName)
+            return true;
+
+          var tagName = target.nodeName.toUpperCase();
+
+          for (var i = 0; i < hotkey.preventIn.length; i++) {
+            if (tagName === hotkey.preventIn[i]) {
+              return false;
+            }
+          }
+
+          return true;
+        }
+      });
+
+      /**
        * Invokes callback functions assosiated with the given hotkey
        * @param  {Event} event
        * @param  {String} keyString hotkey
@@ -156,7 +184,10 @@
           for (var i = 0, l = hotkeys.length; i < l; i++) {
             try {
               var hotkey = hotkeys[i];
-              hotkey.callback.call(hotkey.context, event, hotkey.args);
+
+              if (this._shouldInvokeHandler(event, hotkey)) {
+                hotkey.callback.call(hotkey.context, event, hotkey.args);
+              }
             } catch(e) {
               console.error('HotKeys: ', hotkey.key, e.message);
             }
